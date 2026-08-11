@@ -4,7 +4,7 @@
 
 - Tên nhóm: G36
 - Repository URL: https://github.com/AnhDc2004/DAY13-K4-2A202601714-G36
-- Commit SHA cuối: `cd4c0dd`
+- Commit SHA cuối: `c14559b`
 - Thành viên và vai trò:
   - Đinh Đức Anh - API & Middleware
   - Phan Văn Phương - Security Engineer
@@ -101,5 +101,4 @@ Với mỗi thành viên, ghi rõ nhiệm vụ và link commit/PR tương ứng.
 | Phan Văn Phương | Security Engineer | [524c9c6](https://github.com/AnhDc2004/DAY13-K4-2A202601714-G36/commit/524c9c6) | Thứ tự processor structlog quyết định PII có được che trước khi ghi file; regex pattern cho dữ liệu VN (hộ chiếu, số nhà); kiểm chứng log bằng validate + grep |
 | Trần Minh Hạnh | Metrics & Dashboard | [fbac78f](https://github.com/AnhDc2004/DAY13-K4-2A202601714-G36/commit/fbac78f) | Phân biệt request attempt với success/error; tính percentile, error rate và bucket metrics theo thời gian |
 | Lê Huy Hoàng | SRE & Alerts Engineer | [2619fbc](https://github.com/AnhDc2004/DAY13-K4-2A202601714-G36/commit/2619fbc) | Alert phải symptom-based và có ngưỡng khớp với dashboard contract để không lệch số giữa các thành viên; đếm đúng mẫu số `request_received` (kể cả request bị từ chối sớm) mới ra `error_rate_pct` chính xác; khi test concurrency, latency nội bộ mỗi request không đổi nhưng latency client tăng vọt do event loop bị chặn bởi `time.sleep()` - hiểu rõ khác biệt giữa symptom nội bộ và symptom người dùng cảm nhận. |
-| Nguyễn Thành Huy | QA & Chief Investigator | [cd4c0dd](https://github.com/AnhDc2004/DAY13-K4-2A202601714-G36/commit/cd4c0dd) | Load test + trace propagation + challenge evidence phải đi cùng nhau để kết luận root cause có cơ sở. |
-
+| Nguyễn Thành Huy | QA & Chief Investigator | [c14559b](https://github.com/AnhDc2004/DAY13-K4-2A202601714-G36/commit/c14559b) | Load test + trace propagation + challenge evidence phải đi cùng nhau để kết luận root cause có cơ sở. |
