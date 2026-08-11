@@ -3,8 +3,8 @@
 ## 1. Thông tin nhóm
 
 - Tên nhóm: G36
-- Repository URL: https://github.com/AnhDc2004/K4-DAY13-2A202601714
-- Commit SHA cuối: `524c9c6` (commit phần B — nhóm cập nhật lại SHA cuối cùng khi hoàn tất và push)
+- Repository URL: https://github.com/AnhDc2004/DAY13-K4-2A202601714-G36
+- Commit SHA cuối: 
 - Thành viên và vai trò: 
 
 ## 2. Kết quả kỹ thuật
@@ -53,7 +53,7 @@ Với mỗi thành viên, ghi rõ nhiệm vụ và link commit/PR tương ứng.
 | Thành viên | Phần việc | Commit/PR | Điều đã học |
 |---|---|---|---|
 | Đinh Đức Anh | API & Middleware | | |
-| Phan Văn Phương | Security Engineer — CP1 PII Scrubbing: mở rộng regex (`passport_vn`, `address_vn`), đăng ký `scrub_event` vào processor chain structlog, scrub đệ quy mọi string, đồng bộ detector vào `validate_logs.py`, thêm test và chứng minh log không lộ PII (0 leak, `validate_logs.py` 100/100) | [524c9c6](https://github.com/AnhDc2004/K4-DAY13-2A202601714/commit/524c9c6) | Thứ tự processor structlog quyết định PII có được che trước khi ghi file; regex pattern cho dữ liệu VN (hộ chiếu, số nhà); kiểm chứng log bằng validate + grep |
+| Phan Văn Phương | Security Engineer | [524c9c6](https://github.com/AnhDc2004/DAY13-K4-2A202601714-G36/commit/524c9c6) | Thứ tự processor structlog quyết định PII có được che trước khi ghi file; regex pattern cho dữ liệu VN (hộ chiếu, số nhà); kiểm chứng log bằng validate + grep |
 | Trần Minh Hạnh | Metrics & Dashboard | | |
 | Lê Huy Hoàng | SRE & Alerts Engineer | | |
 | Nguyễn Thành Huy | QA & Chief Investigator | | |
