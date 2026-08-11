@@ -1,19 +1,33 @@
 alerts:
-  - name: TODO_alert_1
-    severity: TODO
-    condition: TODO
+  - name: HighLatencyP95
+    severity: high
+    condition: >
+      p95(response_sent.latency_ms) > 3000ms, đo trên cửa sổ trượt 5 phút,
+      duy trì liên tục >= 5 phút. Khớp SLI latency_p95_ms trong config/slo.yaml
+      và threshold panel Latency trong config/dashboard.yaml.
     type: symptom-based
-    owner: TODO
+    test_scenario: python scripts/inject_incident.py --scenario rag_slow
+    owner: Le Huy Hoang (SRE & Alerts Engineer)
     runbook: docs/alerts.md#alert-1
-  - name: TODO_alert_2
-    severity: TODO
-    condition: TODO
+
+  - name: ElevatedErrorRate
+    severity: critical
+    condition: >
+      error_rate_pct = count(request_failed) / count(request_received) * 100
+      > 2%, duy trì liên tục >= 5 phút. Khớp SLI error_rate_pct trong
+      config/slo.yaml và threshold panel Errors trong config/dashboard.yaml.
     type: symptom-based
-    owner: TODO
+    test_scenario: python scripts/inject_incident.py --scenario tool_fail
+    owner: Le Huy Hoang (SRE & Alerts Engineer)
     runbook: docs/alerts.md#alert-2
-  - name: TODO_alert_3
-    severity: TODO
-    condition: TODO
+
+  - name: CostBudgetExceeded
+    severity: medium
+    condition: >
+      sum(response_sent.cost_usd) trong cửa sổ quan sát 60 phút > $2.50.
+      Khớp SLI daily_cost_usd trong config/slo.yaml và threshold "total"
+      của panel Cost trong config/dashboard.yaml.
     type: symptom-based
-    owner: TODO
+    test_scenario: python scripts/inject_incident.py --scenario cost_spike
+    owner: Le Huy Hoang (SRE & Alerts Engineer)
     runbook: docs/alerts.md#alert-3

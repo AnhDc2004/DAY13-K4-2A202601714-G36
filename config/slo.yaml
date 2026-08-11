@@ -4,13 +4,28 @@ slis:
   latency_p95_ms:
     objective: 3000
     target: 99.5
-    note: Replace with your group's target
+    note: >
+      Giữ nguyên bằng config/dashboard.yaml (panel latency) và app/dashboard.py
+      để không lệch contract. Baseline đo thực tế ~155ms (python scripts/load_test.py),
+      nên 3000ms để lại biên độ an toàn cho tail latency nhưng vẫn bắt được
+      incident rag_slow (baseline ~155ms -> ~13000ms khi bật incident).
   error_rate_pct:
     objective: 2
     target: 99.0
+    note: >
+      Khớp threshold panel errors trong config/dashboard.yaml. Mẫu số dùng
+      request_received (đếm cả request bị từ chối trước /chat sau bản vá
+      _ensure_request_received trong app/main.py) nên error_rate_pct phản ánh
+      đúng tỉ lệ thất bại thực tế người dùng gặp phải.
   daily_cost_usd:
     objective: 2.5
     target: 100.0
+    note: >
+      Objective khớp threshold "total" của panel cost trong config/dashboard.yaml,
+      vốn tính tổng cost_usd trong cửa sổ 60 phút chứ không phải theo ngày lịch.
+      Tên field giữ nguyên theo template gốc; coi ngưỡng 2.5 là budget cho một
+      cửa sổ quan sát (60 phút), không phải chi phí 24h thực tế.
   quality_score_avg:
     objective: 0.75
     target: 95.0
+    note: Khớp threshold mean quality_score trong config/dashboard.yaml.
