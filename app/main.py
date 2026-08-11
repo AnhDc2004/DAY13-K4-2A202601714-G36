@@ -11,7 +11,7 @@ from structlog.contextvars import bind_contextvars, get_contextvars
 from .agent import LabAgent
 from .incidents import disable, enable, status
 from .logging_config import configure_logging, get_logger
-from .metrics import record_error, snapshot
+from .metrics import record_error, record_request_received, snapshot
 from .middleware import CorrelationIdMiddleware
 from .pii import hash_user_id, summarize_text
 from .schemas import ChatRequest, ChatResponse
@@ -49,8 +49,22 @@ def _error_response(request: Request, status_code: int, error_type: str, message
         headers={"x-request-id": correlation_id},
     )
 
+def _ensure_request_received(request: Request, payload: dict | None = None) -> None:
+    """Emit the denominator event once, including requests rejected before /chat."""
+    if getattr(request.state, "request_received_recorded", False):
+        return
+    request.state.request_received_recorded = True
+    record_request_received()
+    log.info(
+        "request_received",
+        service="api",
+        payload=payload or {"path": request.url.path},
+        **_failure_context(),
+    )
+
 @app.exception_handler(RequestValidationError)
 async def handle_validation_error(request: Request, exc: RequestValidationError) -> JSONResponse:
+    _ensure_request_received(request)
     record_error("validation_error")
     log.warning(
         "request_failed",
@@ -68,6 +82,7 @@ async def handle_validation_error(request: Request, exc: RequestValidationError)
 
 @app.exception_handler(StarletteHTTPException)
 async def handle_http_exception(request: Request, exc: StarletteHTTPException) -> JSONResponse:
+    _ensure_request_received(request)
     error_type = f"http_{exc.status_code}"
     if not getattr(request.state, "failure_logged", False):
         request.state.failure_logged = True
@@ -85,6 +100,7 @@ async def handle_http_exception(request: Request, exc: StarletteHTTPException) -
 
 @app.exception_handler(Exception)
 async def handle_unhandled_exception(request: Request, exc: Exception) -> JSONResponse:
+    _ensure_request_received(request)
     error_type = type(exc).__name__
     if not getattr(request.state, "failure_logged", False):
         request.state.failure_logged = True
@@ -126,10 +142,8 @@ async def chat(request: Request, body: ChatRequest) -> ChatResponse:
         env=os.getenv("APP_ENV", "dev"),
     )
 
-    log.info(
-        "request_received",
-        service="api",
-        payload={"message_preview": summarize_text(body.message)},
+    _ensure_request_received(
+        request, {"message_preview": summarize_text(body.message)}
     )
     try:
         result = agent.run(

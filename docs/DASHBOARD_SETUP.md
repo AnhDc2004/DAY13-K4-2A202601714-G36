@@ -29,6 +29,17 @@ Giữ time range mặc định 60 phút, refresh 30 giây và hiển thị thres
 python scripts/validate_dashboard.py
 ```
 
+Repo có sẵn dashboard HTML không cần cài thêm thư viện. Sau khi tạo log, chạy:
+
+```bash
+python scripts/build_dashboard.py --watch
+```
+
+Mở `submission/evidence/dashboard.html` để xem sáu panel. Chế độ `--watch` đọc
+lại log và ghi snapshot mới mỗi 30 giây; trang HTML cũng tự tải lại sau 30 giây.
+Nhấn `Ctrl+C` để dừng. Có thể truyền `--logs` và `--output` khi cần so sánh
+baseline với incident; bỏ `--watch` nếu chỉ cần tạo một snapshot evidence.
+
 Validator kiểm tra cấu trúc contract; nó không thể chứng minh biểu đồ trong ảnh dùng đúng dữ liệu. Evidence runtime vẫn bắt buộc.
 
 ## Cách kiểm tra runtime

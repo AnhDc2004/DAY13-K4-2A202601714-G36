@@ -12,7 +12,7 @@
 - Điểm `validate_logs.py`: **100/100** — sau khi gộp phần A (correlation ID + enrichment) + phần B (PII scrubbing), cả 4 hạng mục đều PASSED (Basic JSON schema, Correlation ID propagation, Log enrichment, PII scrubbing).
 - Tổng số traces:
 - Số PII leak còn lại: **0** — `validate_logs.py` báo `Potential PII leaks detected: 0` + grep `student@|vinuni.edu.vn|0987654321|4111 1111 1111 1111|C1234567` = 0 hit (evidence: `submission/evidence/pii-redaction.txt`).
-- Link/đường dẫn dashboard:
+- Link/đường dẫn dashboard: `submission/evidence/dashboard.html`
 
 ## 3. Logging và tracing
 
@@ -31,8 +31,8 @@
 
 ## 5. Dashboard, SLO và alerts
 
-- Kết quả `validate_dashboard.py`:
-- Evidence dashboard:
+- Kết quả `validate_dashboard.py`: `HỢP LỆ: 6/6 panel có trong dashboard contract.`
+- Evidence dashboard: `submission/evidence/dashboard.html` (cửa sổ 60 phút, refresh 30 giây, có threshold và time series traffic/cost theo phút)
 - SLO đã chọn và lý do:
 - Alert rules và runbook:
 
@@ -54,6 +54,6 @@ Với mỗi thành viên, ghi rõ nhiệm vụ và link commit/PR tương ứng.
 |---|---|---|---|
 | Đinh Đức Anh | API & Middleware | | |
 | Phan Văn Phương | Security Engineer | [524c9c6](https://github.com/AnhDc2004/DAY13-K4-2A202601714-G36/commit/524c9c6) | Thứ tự processor structlog quyết định PII có được che trước khi ghi file; regex pattern cho dữ liệu VN (hộ chiếu, số nhà); kiểm chứng log bằng validate + grep |
-| Trần Minh Hạnh | Metrics & Dashboard | | |
+| Trần Minh Hạnh | Tính `error_rate_pct`; tổng hợp 6 nhóm metrics từ JSONL; dashboard 60 phút, refresh 30 giây, threshold và time series theo phút; unit/integration tests | Bổ sung SHA/PR sau khi commit | Phân biệt request attempt với success/error; tính percentile, error rate và bucket metrics theo thời gian |
 | Lê Huy Hoàng | SRE & Alerts Engineer | | |
 | Nguyễn Thành Huy | QA & Chief Investigator | | |
