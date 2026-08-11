@@ -16,6 +16,7 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     answer: str
     correlation_id: str
+    trace_id: str | None = None
     latency_ms: int
     tokens_in: int
     tokens_out: int

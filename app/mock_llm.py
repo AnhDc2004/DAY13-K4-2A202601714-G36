@@ -4,6 +4,7 @@ import random
 import time
 from dataclasses import dataclass
 
+from .tracing import observe
 from .incidents import STATE
 
 
@@ -24,6 +25,7 @@ class FakeLLM:
     def __init__(self, model: str = "claude-sonnet-4-5") -> None:
         self.model = model
 
+    @observe(name="llm.generate", capture_input=False, capture_output=False)
     def generate(self, prompt: str) -> FakeResponse:
         time.sleep(0.15)
         input_tokens = max(20, len(prompt) // 4)

@@ -1,0 +1,23 @@
+Challenge investigation
+
+Challenge ID: day13-k4-observability-v1
+Incident: rag_slow
+
+Metric symptom:
+- traffic: 10 requests
+- latency_p95: 2653 ms
+- latency_p99: 2653 ms
+- error_rate_pct: 0.0
+
+Slowest request:
+- correlation_id: req-cdc06c50
+- trace_id: 00000000000000000000000000000007
+- latency_ms: 2653
+- request_received line:
+  {"service": "api", "payload": {"message_preview": "Explain why metrics traces and logs work together."}, "user_id_hash": "f00ba60b3772", "session_id": "k4-challenge-s01", "feature": "monitoring", "model": "claude-sonnet-4-5", "env": "dev", "event": "request_received", "correlation_id": "req-cdc06c50", "level": "info", "ts": "2026-08-11T09:54:47.728976Z"}
+- response_sent line:
+  {"service": "api", "latency_ms": 2653, "tokens_in": 35, "tokens_out": 172, "cost_usd": 0.002685, "quality_score": 0.8, "trace_id": "00000000000000000000000000000007", "payload": {"answer_preview": "Starter answer. Teams should improve this output logic and add better quality ch..."}, "event": "response_sent", "feature": "monitoring", "user_id_hash": "f00ba60b3772", "correlation_id": "req-cdc06c50", "model": "claude-sonnet-4-5", "env": "dev", "session_id": "k4-challenge-s01", "level": "info", "ts": "2026-08-11T09:54:50.387673Z"}
+
+Root cause:
+- `app/mock_rag.py` injects a 2.5s sleep when `rag_slow` is enabled.
+- The `rag.retrieve` sub-span therefore becomes the dominant bottleneck in the waterfall.

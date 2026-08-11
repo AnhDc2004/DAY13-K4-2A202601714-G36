@@ -14,6 +14,7 @@ from .tracing import get_langfuse_client, observe, tracing_enabled
 @dataclass
 class AgentResult:
     answer: str
+    trace_id: str | None
     latency_ms: int
     tokens_in: int
     tokens_out: int
@@ -42,6 +43,8 @@ class LabAgent:
         quality_score = self._heuristic_quality(message, response.text, docs)
         latency_ms = int((time.perf_counter() - started) * 1000)
         cost_usd = self._estimate_cost(response.usage.input_tokens, response.usage.output_tokens)
+        trace_id_getter = getattr(langfuse_client, "get_current_trace_id", None)
+        trace_id = trace_id_getter() if callable(trace_id_getter) else None
 
         langfuse_client.update_current_trace(
             user_id=hash_user_id(user_id),
@@ -83,6 +86,7 @@ class LabAgent:
 
         return AgentResult(
             answer=response.text,
+            trace_id=trace_id,
             latency_ms=latency_ms,
             tokens_in=response.usage.input_tokens,
             tokens_out=response.usage.output_tokens,

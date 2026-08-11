@@ -160,11 +160,13 @@ async def chat(request: Request, body: ChatRequest) -> ChatResponse:
             tokens_out=result.tokens_out,
             cost_usd=result.cost_usd,
             quality_score=result.quality_score,
+            trace_id=result.trace_id,
             payload={"answer_preview": summarize_text(result.answer)},
         )
         return ChatResponse(
             answer=result.answer,
             correlation_id=request.state.correlation_id,
+            trace_id=result.trace_id,
             latency_ms=result.latency_ms,
             tokens_in=result.tokens_in,
             tokens_out=result.tokens_out,

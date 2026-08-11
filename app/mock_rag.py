@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import time
 
+from .tracing import observe
+
 from .incidents import STATE
 
 CORPUS = {
@@ -10,7 +12,7 @@ CORPUS = {
     "policy": ["Do not expose PII in logs. Use sanitized summaries only."],
 }
 
-
+@observe(name="rag.retrieve", capture_input=False, capture_output=False)
 def retrieve(message: str) -> list[str]:
     if STATE["tool_fail"]:
         raise RuntimeError("Vector store timeout")

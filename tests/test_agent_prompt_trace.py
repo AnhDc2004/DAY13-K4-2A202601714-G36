@@ -29,6 +29,9 @@ class RecordingLangfuseClient:
     def update_current_generation(self, **kwargs) -> None:
         self.generation_updates.append(kwargs)
 
+    def get_current_trace_id(self) -> str:
+        return "trace-123"
+
 
 def test_agent_links_prompt_version_to_trace_and_generation(monkeypatch) -> None:
     monkeypatch.setenv("LANGFUSE_PUBLIC_KEY", "test-public-key")
@@ -39,7 +42,7 @@ def test_agent_links_prompt_version_to_trace_and_generation(monkeypatch) -> None
     monkeypatch.setattr(agent_module, "get_langfuse_client", lambda: client)
 
     agent = agent_module.LabAgent()
-    agent_module.LabAgent.run.__wrapped__(
+    result = agent_module.LabAgent.run.__wrapped__(
         agent,
         user_id="student-01",
         feature="qa",
@@ -49,6 +52,7 @@ def test_agent_links_prompt_version_to_trace_and_generation(monkeypatch) -> None
 
     trace_metadata = client.trace_updates[-1]["metadata"]
     generation_update = client.generation_updates[-1]
+    assert result.trace_id == "trace-123"
     assert trace_metadata == {
         "prompt_name": "day13-chat",
         "prompt_label": "production",
@@ -57,3 +61,8 @@ def test_agent_links_prompt_version_to_trace_and_generation(monkeypatch) -> None
     }
     assert generation_update["prompt"] is client.prompt
     assert generation_update["metadata"]["prompt_version"] == "3"
+
+
+def test_agent_subcomponents_are_traced() -> None:
+    assert hasattr(agent_module.retrieve, "__wrapped__")
+    assert hasattr(agent_module.FakeLLM.generate, "__wrapped__")
