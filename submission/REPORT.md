@@ -52,7 +52,7 @@ Với mỗi thành viên, ghi rõ nhiệm vụ và link commit/PR tương ứng.
 
 | Thành viên | Phần việc | Commit/PR | Điều đã học |
 |---|---|---|---|
-| Đinh Đức Anh | API & Middleware | | |
+| Đinh Đức Anh | API & Middleware | [49c726b](https://github.com/AnhDc2004/DAY13-K4-2A202601714-G36/commit/49c726b) | Correlation ID chỉ có giá trị khi được bind vào contextvars trước dòng log đầu tiên và xoá ở đầu mỗi request - nhờ vậy mọi log, kể cả request_failed sinh ra trong exception handler, đều truy ngược được về đúng một request. |
 | Phan Văn Phương | Security Engineer | [524c9c6](https://github.com/AnhDc2004/DAY13-K4-2A202601714-G36/commit/524c9c6) | Thứ tự processor structlog quyết định PII có được che trước khi ghi file; regex pattern cho dữ liệu VN (hộ chiếu, số nhà); kiểm chứng log bằng validate + grep |
 | Trần Minh Hạnh | Tính `error_rate_pct`; tổng hợp 6 nhóm metrics từ JSONL; dashboard 60 phút, refresh 30 giây, threshold và time series theo phút; unit/integration tests | Bổ sung SHA/PR sau khi commit | Phân biệt request attempt với success/error; tính percentile, error rate và bucket metrics theo thời gian |
 | Lê Huy Hoàng | SRE & Alerts Engineer | | |
