@@ -6,11 +6,11 @@
 - Repository URL: https://github.com/AnhDc2004/DAY13-K4-2A202601714-G36
 - Commit SHA cuối: `c14559b`
 - Thành viên và vai trò:
-  - Đinh Đức Anh - API & Middleware
-  - Phan Văn Phương - Security Engineer
-  - Trần Minh Hạnh - Metrics & Dashboard
-  - Lê Huy Hoàng - SRE & Alerts Engineer
-  - Nguyễn Thành Huy - QA & Chief Investigator
+  - Đinh Đức Anh - API & Middleware - 2A202601714
+  - Phan Văn Phương - Security Engineer - 2A202602033
+  - Trần Minh Hạnh - Metrics & Dashboard - 2A202601232
+  - Lê Huy Hoàng - SRE & Alerts Engineer - 2A202601660
+  - Nguyễn Thành Huy - QA & Chief Investigator - 2A202601802
 
 ## 2. Kết quả kỹ thuật
 
