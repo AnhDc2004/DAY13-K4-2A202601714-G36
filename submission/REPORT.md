@@ -2,10 +2,10 @@
 
 ## 1. Thông tin nhóm
 
-- Tên nhóm:
-- Repository URL:
-- Commit SHA cuối:
-- Thành viên và vai trò:
+- Tên nhóm: G36
+- Repository URL: https://github.com/AnhDc2004/DAY13-K4-2A202601714-G36
+- Commit SHA cuối: 
+- Thành viên và vai trò: 
 
 ## 2. Kết quả kỹ thuật
 
@@ -52,4 +52,8 @@ Với mỗi thành viên, ghi rõ nhiệm vụ và link commit/PR tương ứng.
 
 | Thành viên | Phần việc | Commit/PR | Điều đã học |
 |---|---|---|---|
-| | | | |
+| Đinh Đức Anh | API & Middleware | | |
+| Phan Văn Phương | Security Engineer |
+| Trần Minh Hạnh | Metrics & Dashboard
+| Lê Huy Hoàng | SRE & Alerts Engineer |
+| Nguyễn Thành Huy | QA & Chief Investigator |

@@ -3,8 +3,10 @@ from __future__ import annotations
 import os
 
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
-from structlog.contextvars import bind_contextvars
+from starlette.exceptions import HTTPException as StarletteHTTPException
+from structlog.contextvars import bind_contextvars, get_contextvars
 
 from .agent import LabAgent
 from .incidents import disable, enable, status
@@ -21,6 +23,81 @@ app = FastAPI(title="Day 13 Observability Lab")
 app.add_middleware(CorrelationIdMiddleware)
 agent = LabAgent()
 
+def _failure_context() -> dict:
+    """Bảo đảm log lỗi vẫn đủ 4 trường enrichment kể cả khi request chết sớm.
+
+    Với lỗi 422, endpoint /chat chưa từng chạy nên chưa có bind_contextvars;
+    thiếu các trường này thì validate_logs.py trừ điểm mục "Log enrichment".
+    """
+    ctx = get_contextvars()
+    return {
+        "user_id_hash": ctx.get("user_id_hash", "unknown"),
+        "session_id": ctx.get("session_id", "unknown"),
+        "feature": ctx.get("feature", "unknown"),
+        "model": ctx.get("model", agent.model),
+        "env": os.getenv("APP_ENV", "dev"),
+    }
+
+def _error_response(request: Request, status_code: int, error_type: str, message: str) -> JSONResponse:
+    correlation_id = getattr(request.state, "correlation_id", "MISSING")
+    return JSONResponse(
+        status_code=status_code,
+        content={
+            "error": {"type": error_type, "message": message},
+            "correlation_id": correlation_id,
+        },
+        headers={"x-request-id": correlation_id},
+    )
+
+@app.exception_handler(RequestValidationError)
+async def handle_validation_error(request: Request, exc: RequestValidationError) -> JSONResponse:
+    record_error("validation_error")
+    log.warning(
+        "request_failed",
+        service="api",
+        error_type="validation_error",
+        status_code=422,
+        payload={
+            "invalid_fields": [
+                ".".join(str(part) for part in err.get("loc", ())) for err in exc.errors()
+            ]
+        },
+        **_failure_context(),
+    )
+    return _error_response(request, 422, "validation_error", "Request body không hợp lệ")
+
+@app.exception_handler(StarletteHTTPException)
+async def handle_http_exception(request: Request, exc: StarletteHTTPException) -> JSONResponse:
+    error_type = f"http_{exc.status_code}"
+    if not getattr(request.state, "failure_logged", False):
+        request.state.failure_logged = True
+        record_error(error_type)
+        writer = log.error if exc.status_code >= 500 else log.warning
+        writer(
+            "request_failed",
+            service="api",
+            error_type=error_type,
+            status_code=exc.status_code,
+            payload={"detail": str(exc.detail)[:200]},
+            **_failure_context(),
+        )
+    return _error_response(request, exc.status_code, error_type, str(exc.detail))
+
+@app.exception_handler(Exception)
+async def handle_unhandled_exception(request: Request, exc: Exception) -> JSONResponse:
+    error_type = type(exc).__name__
+    if not getattr(request.state, "failure_logged", False):
+        request.state.failure_logged = True
+        record_error(error_type)
+        log.error(
+            "request_failed",
+            service="api",
+            error_type=error_type,
+            status_code=500,
+            exc_info=True,
+            **_failure_context(),
+        )
+    return _error_response(request, 500, "internal_error", "Đã có lỗi xảy ra, vui lòng thử lại")
 
 @app.on_event("startup")
 async def startup() -> None:
@@ -31,22 +108,24 @@ async def startup() -> None:
         payload={"tracing_enabled": tracing_enabled()},
     )
 
-
 @app.get("/health")
 async def health() -> dict:
     return {"ok": True, "tracing_enabled": tracing_enabled(), "incidents": status()}
-
 
 @app.get("/metrics")
 async def metrics() -> dict:
     return snapshot()
 
-
 @app.post("/chat", response_model=ChatResponse)
 async def chat(request: Request, body: ChatRequest) -> ChatResponse:
-    # TODO: Enrich logs with request context (user_id_hash, session_id, feature, model, env)
-    # bind_contextvars(...)
-    
+    bind_contextvars(
+        user_id_hash=hash_user_id(body.user_id),
+        session_id=body.session_id,
+        feature=body.feature,
+        model=agent.model,
+        env=os.getenv("APP_ENV", "dev"),
+    )
+
     log.info(
         "request_received",
         service="api",
@@ -81,6 +160,7 @@ async def chat(request: Request, body: ChatRequest) -> ChatResponse:
     except Exception as exc:  # pragma: no cover
         error_type = type(exc).__name__
         record_error(error_type)
+        request.state.failure_logged = True
         log.error(
             "request_failed",
             service="api",
@@ -88,7 +168,6 @@ async def chat(request: Request, body: ChatRequest) -> ChatResponse:
             payload={"detail": str(exc), "message_preview": summarize_text(body.message)},
         )
         raise HTTPException(status_code=500, detail=error_type) from exc
-
 
 @app.post("/incidents/{name}/enable")
 async def enable_incident(name: str) -> JSONResponse:
@@ -98,7 +177,6 @@ async def enable_incident(name: str) -> JSONResponse:
         return JSONResponse({"ok": True, "incidents": status()})
     except KeyError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
-
 
 @app.post("/incidents/{name}/disable")
 async def disable_incident(name: str) -> JSONResponse:
